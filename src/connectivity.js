@@ -36,6 +36,7 @@
     /**
      * Called when a request is terminated successfully
      * @param {PromisedRequest} promise Promised request
+     * @param {Object} response Server response
      */
     function requestSuccess (promise, response) {
         delete pending[promise.id];
@@ -46,6 +47,7 @@
     /**
      * Called when a request is terminated with an error. The server responded to our request
      * @param {PromisedRequest} promise Promised request
+     * @param {Object} response Server response
      */
     function requestFail (promise, response) {
         delete pending[promise.id];
@@ -57,8 +59,10 @@
      * Called when a request times out. This is different from a failure becasue we queue the request for retry
      * @param {PromisedRequest} promise Promised request
      */
-    function requestTimeout (promise, response) {
-
+    function requestTimeout (promise) {
+        setTimeout(function () {
+            Connectivity.send(promise);
+        }, Connectivity.retry);
     }
 
     global.Connectivity = {
@@ -137,9 +141,17 @@
          * @return {String} Request identifier
          */
         send : function (request) {
-            var promise = new PromisedRequest(request);
+            var promise;
+            if (request instanceof PromisedRequest) {
+                promise = request;
+                request = promise.request;
+            } else {
+                var promise = new PromisedRequest(request);
 
-            pending[promise.id] = promise;
+                pending[promise.id] = promise;
+            }
+
+            promise.tries += 1;
 
             this.Adapter.send(request).then(function (response) {
                 requestSuccess(promise, response);
@@ -177,6 +189,12 @@
          */
         var callbacks = {};
         this.callbacks = callbacks;
+
+        /**
+         * How many times this request was tried already.
+         * @type Integer
+         */
+        this.tries = 0;
 
         var empty = function () {};
 
