@@ -125,4 +125,43 @@ describe("Queued requests", function () {
             responseText : "OK"
         });
     });
+
+    it("shuold work when we are back to normal connectivity even on failure", function () {
+        var request = {
+            url : "/timeout/timeout/fail"
+        };
+
+        callbacks.event = function () {};
+        spyOn(callbacks, "event");
+
+        Connectivity.on("connectivityChange", callbacks.event);
+
+        Connectivity.send(request).then(callbacks.success, callbacks.failure);
+
+        // Just the time to make a single request
+        jasmine.Clock.tick(100);
+
+        expect(callbacks.success).not.toHaveBeenCalled();
+        expect(callbacks.failure).not.toHaveBeenCalled();
+
+        // retry timeout
+        jasmine.Clock.tick(Connectivity.retry);
+
+        expect(callbacks.success).not.toHaveBeenCalled();
+        expect(callbacks.failure).not.toHaveBeenCalled();
+
+        // two time outs -> change state
+        expect(callbacks.event).toHaveBeenCalled();
+
+        // retry again (one timeout + time to get the response)
+        jasmine.Clock.tick(Connectivity.retry + 100);
+
+        expect(callbacks.event.calls.length).toEqual(2);
+        expect(callbacks.failure).toHaveBeenCalled();
+        expect(callbacks.failure.calls[0].args[0]).toEqual(request);
+        expect(callbacks.failure.calls[0].args[1]).toEqual({
+            status : 404,
+            responseText : "FAIL"
+        });
+    });
 });
