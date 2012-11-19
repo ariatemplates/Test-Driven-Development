@@ -61,4 +61,29 @@ describe("connectivity", function () {
         expect(callbacks.cb2).not.toHaveBeenCalled();
         expect(callbacks.cb3).toHaveBeenCalled();
     });
+
+    it("should call all callbacks when unsubscribing from within one of them", function () {
+        function unsubscribe () {
+            // Remove all callbacks
+            Connectivity.off();
+        }
+        var callbacks = {
+            cb1 : unsubscribe,
+            cb2 : unsubscribe,
+            cb3 : unsubscribe
+        };
+
+        spyOn(callbacks, "cb1").andCallThrough();
+        spyOn(callbacks, "cb2").andCallThrough();
+        spyOn(callbacks, "cb3").andCallThrough();
+
+        Connectivity.on("connectivityChange", callbacks.cb1);
+        Connectivity.on("connectivityChange", callbacks.cb2);
+        Connectivity.on("connectivityChange", callbacks.cb3);
+
+        Connectivity.setState(false);
+        expect(callbacks.cb1).toHaveBeenCalled();
+        expect(callbacks.cb2).toHaveBeenCalled();
+        expect(callbacks.cb3).toHaveBeenCalled();
+    });
 });
