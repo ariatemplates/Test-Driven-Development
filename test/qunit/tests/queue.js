@@ -126,4 +126,43 @@
 
         clock.restore();
     });
+
+    test("work when we are back to normal connectivity even on failure", function () {
+        var clock = this.sandbox.useFakeTimers();
+        var request = {
+            url : "/timeout/timeout/fail"
+        };
+
+        callbacks.event = this.spy();
+
+        Connectivity.on("connectivityChange", callbacks.event);
+
+        Connectivity.send(request).then(callbacks.success, callbacks.failure);
+
+        // Just the time to make a single request
+        clock.tick(100);
+
+        ok(!callbacks.success.called);
+        ok(!callbacks.failure.called);
+
+        // retry timeout
+        clock.tick(Connectivity.retry);
+
+        ok(!callbacks.success.called);
+        ok(!callbacks.failure.called);
+
+        // two time outs -> change state
+        ok(callbacks.event.calledOnce);
+
+        // retry again (one timeout + time to get the response)
+        clock.tick(Connectivity.retry + 100);
+
+        ok(callbacks.event.calledTwice);
+        ok(callbacks.failure.calledOnce);
+        deepEqual(callbacks.failure.firstCall.args[0], request);
+        deepEqual(callbacks.failure.firstCall.args[1], {
+            status : 404,
+            responseText : "FAIL"
+        });
+    });
 })();
