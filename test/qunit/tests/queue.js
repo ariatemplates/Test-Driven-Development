@@ -88,4 +88,42 @@
 
         clock.restore();
     });
+
+    test("work when we are back to normal connectivity", function () {
+        var clock = this.sandbox.useFakeTimers();
+        var request = {
+            url : "/timeout/timeout/success"
+        };
+
+        callbacks.event = this.spy();
+
+        Connectivity.on("connectivityChange", callbacks.event);
+
+        Connectivity.send(request).then(callbacks.success, callbacks.failure);
+
+        // Just the time to make a single request
+        clock.tick(100);
+
+        ok(!callbacks.success.called);
+        ok(!callbacks.failure.called);
+
+        // retry timeout
+        clock.tick(Connectivity.retry);
+
+        ok(!callbacks.success.called);
+        ok(!callbacks.failure.called);
+
+        // retry again (one timeout + time to get the response)
+        clock.tick(Connectivity.retry + 100);
+
+        ok(callbacks.event.calledTwice);
+        ok(callbacks.success.calledOnce);
+        deepEqual(callbacks.success.firstCall.args[0], request);
+        deepEqual(callbacks.success.firstCall.args[1], {
+            status : 200,
+            responseText : "OK"
+        });
+
+        clock.restore();
+    });
 })();
