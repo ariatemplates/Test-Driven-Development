@@ -123,4 +123,42 @@ describe("Queued requests", function () {
             responseText : "OK"
         });
     });
+
+    it("shuold work when we are back to normal connectivity even on failure", function () {
+        var request = {
+            url : "/timeout/timeout/fail"
+        };
+
+        callbacks.event = sinon.spy();
+
+        Connectivity.on("connectivityChange", callbacks.event);
+
+        Connectivity.send(request).then(callbacks.success, callbacks.failure);
+
+        // Just the time to make a single request
+        clock.tick(100);
+
+        expect(callbacks.success.called).not.to.be.ok();
+        expect(callbacks.failure.called).not.to.be.ok();
+
+        // retry timeout
+        clock.tick(Connectivity.retry);
+
+        expect(callbacks.success.called).not.to.be.ok();
+        expect(callbacks.failure.called).not.to.be.ok();
+
+        // two time outs -> change state
+        expect(callbacks.event.calledOnce).to.be.ok();
+
+        // retry again (one timeout + time to get the response)
+        clock.tick(Connectivity.retry + 100);
+
+        expect(callbacks.event.calledTwice).to.be.ok();
+        expect(callbacks.failure.calledOnce).to.be.ok();
+        expect(callbacks.failure.firstCall.args[0]).to.eql(request);
+        expect(callbacks.failure.firstCall.args[1]).to.eql({
+            status : 404,
+            responseText : "FAIL"
+        });
+    });
 });
