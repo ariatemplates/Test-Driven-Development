@@ -52,6 +52,7 @@
      */
     function requestFail (promise, response) {
         delete pending[promise.id];
+        Connectivity.setState(true);
 
         promise.callbacks.failure.call({}, promise.request, response);
     }
