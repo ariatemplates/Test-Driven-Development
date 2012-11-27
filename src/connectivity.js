@@ -48,7 +48,9 @@
      * @param {PromisedRequest} promise Promised request
      */
     function requestFail (promise, response) {
+        delete pending[promise.id];
 
+        promise.callbacks.failure.call({}, promise.request, response);
     }
 
     /**
@@ -176,14 +178,16 @@
         var callbacks = {};
         this.callbacks = callbacks;
 
+        var empty = function () {};
+
         /**
          * Promise exposed to the user
          * @type Object
          */
         this.promise = {
             then : function (success, failure) {
-                callbacks.success = success;
-                callbacks.failure = failure;
+                callbacks.success = success || empty;
+                callbacks.failure = failure || empty;
             }
         };
     };
