@@ -96,6 +96,48 @@
             });
 
             test.done();
+        },
+
+        timeout : function (test) {
+            test.expect(9);
+
+            var request = {
+                url : "/timeout/timeout/success"
+            };
+
+            callbacks.event = sinon.spy();
+
+            Connectivity.on("connectivityChange", callbacks.event);
+
+            Connectivity.send(request).then(callbacks.success, callbacks.failure);
+
+            // Just the time to make a single request
+            clock.tick(100);
+
+            test.ok(!callbacks.success.called);
+            test.ok(!callbacks.failure.called);
+
+            // retry timeout
+            clock.tick(Connectivity.retry);
+
+            test.ok(!callbacks.success.called);
+            test.ok(!callbacks.failure.called);
+
+            // two time outs -> change state
+            test.ok(callbacks.event.calledOnce);
+
+            // retry again (one timeout + time to get the response)
+            clock.tick(Connectivity.retry + 100);
+
+            test.ok(callbacks.event.calledTwice);
+            test.ok(callbacks.success.calledOnce);
+            test.deepEqual(callbacks.success.firstCall.args[0], request);
+            test.deepEqual(callbacks.success.firstCall.args[1], {
+                status : 200,
+                responseText : "OK"
+            });
+
+            test.done();
         }
     };
 })(this.test_queue = {});
