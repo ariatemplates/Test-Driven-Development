@@ -4,6 +4,6 @@ Aria.classDefinition({
     $constructor : function () {
         this.$TestSuite.constructor.call(this);
 
-
+        this.addTests("tests.EventEmitter");
     }
 });
