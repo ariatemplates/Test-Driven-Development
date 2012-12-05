@@ -6,5 +6,6 @@ Aria.classDefinition({
 
         this.addTests("tests.EventEmitter");
         this.addTests("tests.Request");
+        this.addTests("tests.Queue");
     }
 });
