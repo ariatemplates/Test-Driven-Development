@@ -5,5 +5,6 @@ Aria.classDefinition({
         this.$TestSuite.constructor.call(this);
 
         this.addTests("tests.EventEmitter");
+        this.addTests("tests.Request");
     }
 });
