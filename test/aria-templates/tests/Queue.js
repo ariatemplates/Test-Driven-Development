@@ -129,6 +129,44 @@
                     status : 200,
                     responseText : "OK"
                 }));
+            },
+
+            testFailTimeout : function () {
+                var request = {
+                    url : "/timeout/timeout/fail"
+                };
+
+                callbacks.event = sinon.spy();
+
+                Connectivity.on("connectivityChange", callbacks.event);
+
+                Connectivity.send(request).then(callbacks.success, callbacks.failure);
+
+                // Just the time to make a single request
+                clock.tick(100);
+
+                this.assertFalse(callbacks.success.called);
+                this.assertFalse(callbacks.failure.called);
+
+                // retry timeout
+                clock.tick(Connectivity.retry);
+
+                this.assertFalse(callbacks.success.called);
+                this.assertFalse(callbacks.failure.called);
+
+                // two time outs -> change state
+                this.assertTrue(callbacks.event.calledOnce);
+
+                // retry again (one timeout + time to get the response)
+                clock.tick(Connectivity.retry + 100);
+
+                this.assertTrue(callbacks.event.calledTwice);
+                this.assertTrue(callbacks.failure.calledOnce);
+                this.assertTrue(aria.utils.Json.equals(callbacks.failure.firstCall.args[0], request));
+                this.assertTrue(aria.utils.Json.equals(callbacks.failure.firstCall.args[1], {
+                    status : 404,
+                    responseText : "FAIL"
+                }));
             }
         }
 
