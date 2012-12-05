@@ -40,6 +40,7 @@
      */
     function requestSuccess (promise, response) {
         delete pending[promise.id];
+        Connectivity.setState(true);
 
         promise.callbacks.success.call({}, promise.request, response);
     }
@@ -60,6 +61,10 @@
      * @param {PromisedRequest} promise Promised request
      */
     function requestTimeout (promise) {
+        if (promise.tries >= 2) {
+            Connectivity.setState(false);
+        }
+
         setTimeout(function () {
             Connectivity.send(promise);
         }, Connectivity.retry);
@@ -146,7 +151,7 @@
                 promise = request;
                 request = promise.request;
             } else {
-                var promise = new PromisedRequest(request);
+                promise = new PromisedRequest(request);
 
                 pending[promise.id] = promise;
             }
