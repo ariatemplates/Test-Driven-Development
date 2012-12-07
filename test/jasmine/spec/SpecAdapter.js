@@ -128,4 +128,38 @@ describe("adapter", function () {
             expect(callbacks.timeout).not.toHaveBeenCalled();
         });
     });
+
+    it("should call the timeout callback", function () {
+        // Since we don't have async fixture we're going to make it part of the test
+        runs(asyncFixture);
+
+        waitsFor(function () {
+            // we are waiting for an Aria.load, that is asynchronous, but we also mocked time, let the time flow
+            clock.tick(10);
+            return !!Connectivity.Adapter;
+        }, "there should be an adapter", 1000);
+
+        runs(function () {
+            var request = {
+                url : "/timeout",
+                timeout : 1000
+            };
+
+            Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+            // Time for a request
+            clock.tick(100);
+
+            expect(callbacks.success).not.toHaveBeenCalled();
+            expect(callbacks.failure).not.toHaveBeenCalled();
+            expect(callbacks.timeout).not.toHaveBeenCalled();
+
+            // Let the timeout run
+            clock.tick(1000);
+
+            expect(callbacks.success).not.toHaveBeenCalled();
+            expect(callbacks.failure).not.toHaveBeenCalled();
+            expect(callbacks.timeout).toHaveBeenCalledOnce();
+        });
+    });
 });
