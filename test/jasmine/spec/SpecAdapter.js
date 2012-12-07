@@ -14,6 +14,9 @@ describe("adapter", function () {
         server.respondWith("/success", [200, {
                     "Content-Type" : "application/json"
                 }, '[{ "ok": true }]']);
+        server.respondWith("/fail", [404, {
+                    "Content-Type" : "application/json"
+                }, '[{ "ok": false }]']);
         server.autoRespondAfter = 100;
 
         callbacks = {
@@ -41,6 +44,7 @@ describe("adapter", function () {
     afterEach(function () {
         server.restore();
         clock.restore();
+        Connectivity.Adapter = null;
     });
 
     var asyncFixture = function () {
@@ -86,6 +90,41 @@ describe("adapter", function () {
 
             expect(callbacks.success).toHaveBeenCalledOnce();
             expect(callbacks.failure).not.toHaveBeenCalled();
+            expect(callbacks.timeout).not.toHaveBeenCalled();
+        });
+    });
+
+    it("should call the fail callback", function () {
+        // Since we don't have async fixture we're going to make it part of the test
+        runs(asyncFixture);
+
+        waitsFor(function () {
+            // we are waiting for an Aria.load, that is asynchronous, but we also mocked time, let the time flow
+            clock.tick(10);
+            return !!Connectivity.Adapter;
+        }, "there should be an adapter", 1000);
+
+        runs(function () {
+            var request = {
+                url : "/fail",
+                timeout : 1000
+            };
+
+            Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+            // Time for a request
+            clock.tick(100);
+            server.respond();
+
+            expect(callbacks.success).not.toHaveBeenCalled();
+            expect(callbacks.failure).toHaveBeenCalledOnce();
+            expect(callbacks.timeout).not.toHaveBeenCalled();
+
+            // Let the timeout run
+            clock.tick(1000);
+
+            expect(callbacks.success).not.toHaveBeenCalled();
+            expect(callbacks.failure).toHaveBeenCalledOnce();
             expect(callbacks.timeout).not.toHaveBeenCalled();
         });
     });
