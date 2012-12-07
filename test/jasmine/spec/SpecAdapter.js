@@ -1,8 +1,20 @@
 describe("adapter", function () {
     var callbacks;
+    var server;
+    var clock;
 
     beforeEach(function () {
-        jasmine.Clock.useMock();
+        clock = sinon.useFakeTimers();
+        sinon.FakeXMLHttpRequest.useFilters = true;
+        sinon.FakeXMLHttpRequest.addFilter(function (method, url) {
+            return "./success./fail./timeout.".indexOf(url) === -1;
+        });
+        server = sinon.fakeServerWithClock.create();
+
+        server.respondWith("/success", [200, {
+                    "Content-Type" : "application/json"
+                }, '[{ "ok": true }]']);
+        server.autoRespondAfter = 100;
 
         callbacks = {
             success : function () {},
@@ -26,6 +38,10 @@ describe("adapter", function () {
 
         Connectivity.Adapter = null;
     });
+    afterEach(function () {
+        server.restore();
+        clock.restore();
+    });
 
     var asyncFixture = function () {
         Aria.load({
@@ -45,7 +61,7 @@ describe("adapter", function () {
 
         waitsFor(function () {
             // we are waiting for an Aria.load, that is asynchronous, but we also mocked time, let the time flow
-            jasmine.Clock.tick(10);
+            clock.tick(10);
             return !!Connectivity.Adapter;
         }, "there should be an adapter", 1000);
 
@@ -58,14 +74,15 @@ describe("adapter", function () {
             Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
 
             // Time for a request
-            jasmine.Clock.tick(100);
+            clock.tick(100);
+            server.respond();
 
             expect(callbacks.success).toHaveBeenCalledOnce();
             expect(callbacks.failure).not.toHaveBeenCalled();
             expect(callbacks.timeout).not.toHaveBeenCalled();
 
             // Let the timeout run
-            jasmine.Clock.tick(1000);
+            clock.tick(1000);
 
             expect(callbacks.success).toHaveBeenCalledOnce();
             expect(callbacks.failure).not.toHaveBeenCalled();
