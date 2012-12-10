@@ -23,6 +23,9 @@ describe("Adapter", function () {
                     server.respondWith("/success", [200, {
                                 "Content-Type" : "application/json"
                             }, '[{ "ok": true }]']);
+                    server.respondWith("/fail", [404, {
+                                "Content-Type" : "application/json"
+                            }, '[{ "ok": false }]']);
                     server.autoRespondAfter = 100;
 
                     callback();
@@ -66,6 +69,30 @@ describe("Adapter", function () {
 
         expect(callbacks.success.calledOnce).to.be.ok();
         expect(callbacks.failure.called).not.to.be.ok();
+        expect(callbacks.timeout.called).not.to.be.ok();
+    });
+
+    it("should call the fail callback", function () {
+        var request = {
+            url : "/fail",
+            timeout : 1000
+        };
+
+        Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+        // Time for a request
+        clock.tick(100);
+        server.respond();
+
+        expect(callbacks.success.called).not.to.be.ok();
+        expect(callbacks.failure.calledOnce).to.be.ok();
+        expect(callbacks.timeout.called).not.to.be.ok();
+
+        // Let the timeout run
+        clock.tick(1000);
+
+        expect(callbacks.success.called).not.to.be.ok();
+        expect(callbacks.failure.calledOnce).to.be.ok();
         expect(callbacks.timeout.called).not.to.be.ok();
     });
 });
