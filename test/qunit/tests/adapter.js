@@ -48,6 +48,9 @@
         server.respondWith("/success", [200, {
                     "Content-Type" : "application/json"
                 }, '[{ "ok": true }]']);
+        server.respondWith("/fail", [404, {
+                    "Content-Type" : "application/json"
+                }, '[{ "ok": false }]']);
         server.autoRespondAfter = 100;
 
         return server;
@@ -82,6 +85,42 @@
 
             ok(callbacks.success.calledOnce);
             ok(!callbacks.failure.called);
+            ok(!callbacks.timeout.called);
+
+            server.restore();
+            clock.restore();
+
+            start();
+        });
+    });
+
+    asyncTest("should call the fail callback", function () {
+        expect(6);
+
+        asyncFixtureWithCallback.call(this, function () {
+            var clock = this.sandbox.useFakeTimers();
+            var server = sandboxedServer.call(this);
+
+            var request = {
+                url : "/fail",
+                timeout : 1000
+            };
+
+            Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+            // Time for a request
+            clock.tick(100);
+            server.respond();
+
+            ok(!callbacks.success.called);
+            ok(callbacks.failure.calledOnce);
+            ok(!callbacks.timeout.called);
+
+            // Let the timeout run
+            clock.tick(1000);
+
+            ok(!callbacks.success.called);
+            ok(callbacks.failure.calledOnce);
             ok(!callbacks.timeout.called);
 
             server.restore();
