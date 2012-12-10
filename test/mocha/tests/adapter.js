@@ -95,4 +95,27 @@ describe("Adapter", function () {
         expect(callbacks.failure.calledOnce).to.be.ok();
         expect(callbacks.timeout.called).not.to.be.ok();
     });
+
+    it("should call the timeout callback", function () {
+        var request = {
+            url : "/timeout",
+            timeout : 1000
+        };
+
+        Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+        // Time for a request
+        clock.tick(100);
+
+        expect(callbacks.success.called).not.to.be.ok();
+        expect(callbacks.failure.called).not.to.be.ok();
+        expect(callbacks.timeout.called).not.to.be.ok();
+
+        // Let the timeout run
+        clock.tick(1000);
+
+        expect(callbacks.success.called).not.to.be.ok();
+        expect(callbacks.failure.called).not.to.be.ok();
+        expect(callbacks.timeout.calledOnce).to.be.ok();
+    });
 });
