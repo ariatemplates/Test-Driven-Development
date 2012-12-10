@@ -129,4 +129,39 @@
             start();
         });
     });
+
+    asyncTest("call the timeout callback", function () {
+        expect(6);
+
+        asyncFixtureWithCallback.call(this, function () {
+            var clock = this.sandbox.useFakeTimers();
+            var server = sandboxedServer.call(this);
+
+            var request = {
+                url : "/timeout",
+                timeout : 1000
+            };
+
+            Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+            // Time for a request
+            clock.tick(100);
+
+            ok(!callbacks.success.called);
+            ok(!callbacks.failure.called);
+            ok(!callbacks.timeout.called);
+
+            // Let the timeout run
+            clock.tick(1000);
+
+            ok(!callbacks.success.called);
+            ok(!callbacks.failure.called);
+            ok(callbacks.timeout.calledOnce);
+
+            server.restore();
+            clock.restore();
+
+            start();
+        });
+    });
 })();
