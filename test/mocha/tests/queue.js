@@ -59,6 +59,9 @@ describe("Queued requests", function () {
             failure : sinon.spy()
         };
     });
+    after(function () {
+        clock.restore();
+    });
 
     it("should work the second time", function () {
         var request = {
