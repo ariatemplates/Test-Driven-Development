@@ -112,6 +112,33 @@
                 test.ok(!callbacks.timeout.called);
 
                 test.done();
+            },
+
+            timeoutCallback : function (test) {
+                test.expect(6);
+
+                var request = {
+                    url : "/timeout",
+                    timeout : 1000
+                };
+
+                Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+                // Time for a request
+                clock.tick(100);
+
+                test.ok(!callbacks.success.called);
+                test.ok(!callbacks.failure.called);
+                test.ok(!callbacks.timeout.called);
+
+                // Let the timeout run
+                clock.tick(1000);
+
+                test.ok(!callbacks.success.called);
+                test.ok(!callbacks.failure.called);
+                test.ok(callbacks.timeout.calledOnce);
+
+                test.done();
             }
         }
     };
