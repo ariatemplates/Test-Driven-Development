@@ -4,7 +4,11 @@
         later(promise.callbacks.success, response);
     };
     var fail = function (response, promise) {
-        later(promise.callbacks.fail, response);
+        if (response.statusText === aria.core.IO.TIMEOUT_ERROR) {
+            later(promise.callbacks.timeout, response);
+        } else {
+            later(promise.callbacks.fail, response);
+        }
     };
     var later = function (callback, response) {
         setTimeout(function () {
