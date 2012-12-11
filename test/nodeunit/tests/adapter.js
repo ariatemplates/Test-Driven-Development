@@ -27,6 +27,9 @@
                         server.respondWith("/success", [200, {
                                     "Content-Type" : "application/json"
                                 }, '[{ "ok": true }]']);
+                        server.respondWith("/fail", [404, {
+                                    "Content-Type" : "application/json"
+                                }, '[{ "ok": false }]']);
                         server.autoRespondAfter = 100;
 
                         callback();
@@ -78,6 +81,34 @@
 
                 test.ok(callbacks.success.calledOnce);
                 test.ok(!callbacks.failure.called);
+                test.ok(!callbacks.timeout.called);
+
+                test.done();
+            },
+
+            failCallback : function (test) {
+                test.expect(6);
+
+                var request = {
+                    url : "/fail",
+                    timeout : 1000
+                };
+
+                Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+                // Time for a request
+                clock.tick(100);
+                server.respond();
+
+                test.ok(!callbacks.success.called);
+                test.ok(callbacks.failure.calledOnce);
+                test.ok(!callbacks.timeout.called);
+
+                // Let the timeout run
+                clock.tick(1000);
+
+                test.ok(!callbacks.success.called);
+                test.ok(callbacks.failure.calledOnce);
                 test.ok(!callbacks.timeout.called);
 
                 test.done();
