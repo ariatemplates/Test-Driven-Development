@@ -93,6 +93,29 @@
                 this.assertFalse(callbacks.success.called);
                 this.assertTrue(callbacks.failure.calledOnce);
                 this.assertFalse(callbacks.timeout.called);
+            },
+
+            testTimeoutCallback : function () {
+                var request = {
+                    url : "/timeout",
+                    timeout : 1000
+                };
+
+                Connectivity.Adapter.send(request).then(callbacks.success, callbacks.failure, callbacks.timeout);
+
+                // Time for a request
+                clock.tick(100);
+
+                this.assertFalse(callbacks.success.called);
+                this.assertFalse(callbacks.failure.called);
+                this.assertFalse(callbacks.timeout.called);
+
+                // Let the timeout run
+                clock.tick(1000);
+
+                this.assertFalse(callbacks.success.called);
+                this.assertFalse(callbacks.failure.called);
+                this.assertTrue(callbacks.timeout.calledOnce);
             }
         }
     });
