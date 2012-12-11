@@ -1,11 +1,16 @@
 (function () {
     var success = function (response, promise) {
         // Yelds to guarantees asynchronous callbacks
+        later(promise.callbacks.success, response);
+    };
+    var fail = function (response, promise) {
+        later(promise.callbacks.fail, response);
+    };
+    var later = function (callback, response) {
         setTimeout(function () {
-            promise.callbacks.success.call(null);
+            callback.call(null);
         }, 4);
     };
-    var fail = function (promise) {};
 
     var AdapterPromise = function (request) {
         /**
