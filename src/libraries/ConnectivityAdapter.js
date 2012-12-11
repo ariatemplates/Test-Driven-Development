@@ -12,8 +12,14 @@
     };
     var later = function (callback, response) {
         setTimeout(function () {
-            callback.call(null);
+            callback.call(null, normalizeResponse(response));
         }, 4);
+    };
+    var normalizeResponse = function (response) {
+        return {
+            status : response.status || 0,
+            responseText : response.responseText
+        };
     };
 
     var AdapterPromise = function (request) {
