@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>Test Case - Test Driven Development</title>
+    <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.0.min.css" />
+    <link rel="stylesheet" href="./css/site.css" />
+    <link rel="stylesheet" href="./css/print.css" media="print" />
+
+      
+    <script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script>
+
+    <link rel="stylesheet" href="js/highlight.js/styles/github.css">
+    <script src="js/highlight.js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body class="topBarDisabled">
+    <div class="container-fluid">
+      <div id="banner">
+        <div class="pull-left">
+          <div id="bannerLeft">
+            <h2>Test Driven Development</h2>
+          </div>
+        </div>
+        <div class="pull-right">  </div>
+        <div class="clear"><hr/></div>
+      </div>
+
+      <div id="breadcrumbs">
+        <ul class="breadcrumb">
+          <li id="projectVersion">Version: 1.0.0</li>
+          <li class="pull-right">
+            <a href="https://github.com/ariatemplates/Test-Driven-Development" class="externalLink" title="This project on GitHub">This project on GitHub</a>
+          </li>
+          <li class="divider pull-right">|</li>
+          <li class="pull-right">
+            <a href="http://github.com/ariatemplates/attester" class="externalLink" title="attester">attester</a>
+          </li>
+          <li class="divider pull-right">|</li>
+          <li class="pull-right">
+            <a href="http://ariatemplates.com" class="externalLink" title="Aria Templates">Aria Templates</a>
+          </li>
+        </ul>
+      </div>
+
+            
+      <div class="row-fluid">
+        <div id="leftColumn" class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+
+              <li class="nav-header">Testing</li>
+              <li>
+                <a href="index.html" title="Introduction"><i class="none"></i>Introduction</a>
+              </li>
+              <li>
+                <a href="terminology.html" title="Terminology"><i class="none"></i>Terminology</a>
+              </li>
+
+              <li class="nav-header">Aria Tester</li>
+              <li class="active">
+                <a href="aria_testcase.html" title="Test Case"><i class="none"></i>Test Case</a>
+              </li>
+              <li>
+                <a href="aria_modulectrltestcase.html" title="Module Controller Test Case"><i class="none"></i>Module Controller Test Case</a>
+              </li>
+              <li>
+                <a href="aria_widgettestcase.html" title="Widget Test Case"><i class="none"></i>Widget Test Case</a>
+              </li>
+              <li>
+                <a href="aria_templatetestcase.html" title="Template Test Case"><i class="none"></i>Template Test Case</a>
+              </li>
+              <li>
+                <a href="aria_robottestcase.html" title="Robot Test Case"><i class="none"></i>Robot Test Case</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+                
+        <div id="bodyColumn"  class="span9" >
+
+          <h2>Test Case</h2>
+
+          <p>The base class for any Aria Templates test is <code>aria.jsunit.TestCase</code>. On top of basic assertions it allows to assert logs and events, it provides mocking and sandboxing. This is ideal for pure JavaScript classes that don't need DOM interaction.</p>
+
+          <p>Here is an example of unit test class.</p>
+
+          <div class="highlight">
+            <pre><code>Aria.classDefinition({
+    $classpath : "SyncTest",
+    $extends : "aria.jsunit.TestCase",
+    $prototype : {
+        testAssertTrue : function () {
+            this.assertTrue(false, "This assertion is false");
+        }
+    }
+});</code></pre>
+          </div>
+
+          <p>A Test Case (cf. <a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.TestCase" class="externallink">API doc</a>) will usually feature several single test methods. All tests are supposed to be completely independent from each other, and the order in which they are executed should not be taken into consideration.</p>
+
+          <p>When running a TestCase, all the methods defined in the prototype and with a name starting with test will be considered as test methods. It is mandatory to follow this naming convention.</p>
+
+          <p>The scope of a test method is the test case and no return value is expected. The status of the test is determined by the result of the various asserts made during this test. A test method containing no failing assert is considered as successful if no JavaScript error was thrown during its execution.</p>
+
+          <h2>Assert</h2>
+
+          <p>The possible assertions that can be done from within a test case are defined in <code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.Assert">aria.jsunit.Assert</a></code> and are</p>
+
+          <ul>
+            <li>
+              <code>assertTrue</code> / <code>assertFalse</code> Test if a value is true or false
+            </li>
+          </ul>
+
+<pre><code>this.assertTrue("a truthy value");  // assert fail</code></pre>
+
+          <ul>
+            <li>
+              <code>assertEquals</code> / <code>assertNotEquals</code> Test that two values are strictly equal
+            </li>
+          </ul>
+
+<pre><code>var number = 12;
+this.assertEquals(number, 12);   // true
+this.assertEquals(number, "12"); // false
+</code></pre>
+
+          <ul>
+            <li>
+              <code>assertJsonEquals</code> / <code>assertJsonNotEquals</code> Test for deep equality of objects / array
+            </li>
+          </ul>
+
+<pre><code>this.assertEquals([1, 2], [1, 2]); // false
+this.assertJsonEquals([1, 2], [1, 2]); // true
+this.assertJsonEquals({
+  one : 1,
+  two : 2
+}, {
+  two : 2,
+  one : 1
+});    // true
+</code></pre>
+
+          <ul>
+            <li>
+              <code>assertJsonContains</code> Assert that an object is included in a bigger container
+            </li>
+          </ul>
+
+<pre><code>var serverResponse = {
+  one : 1,
+  two : 2,
+  // other values
+  end : "eventually"
+};
+this.assertJsonContains(serverResponse, {
+  one : 1
+});   // true
+</code></pre>
+
+          <ul>
+            <li>
+              <code>assertLogsEmpty</code> Test that no class logged an error message
+            </li>
+          </ul>
+
+          <ul>
+            <li>
+              <code>assertErrorInLogs</code> Test that a precise error has been logged
+            </li>
+          </ul>
+
+<pre><code>someClass.$raiseError("Error while having fun");
+this.assertErrorInLogs("Error while having fun");   // true
+</code></pre>
+
+          <p>Error messages for which a corresponding assertion is not performed will make the test fail</p>
+
+          <ul>
+            <li>
+              <code>fail</code> Explicitly let the test fail with a given message
+            </li>
+          </ul>
+
+<pre><code>if (number > 10) {
+  this.fail("I'd like a smaller number");
+}
+</code></pre>
+
+
+
+        <h2>Asynchronous testing</h2>
+
+        <p>Asynchronous tests are a special kind of test methods, and their name should start with <code>testAsync</code></p>
+
+        <p>The easiest way to do an asynchronous test is to directly call the asynchronous method, passing a callback defined in the Test Case. This callback will then be responsible of notifying the tester when the test is finished.</p>
+
+        <p>The callback can be defined in the prototype of the Test Case, but in this case, make sure its name doesn't start with <code>test</code>, otherwise it will be picked up and executed on its own as a test method.</p>
+
+        <p>To notify the test runner, <code>aria.jsunit.TestCase</code> provides the <code>notifyTestEnd</code> method.</p>
+
+<pre><code>Aria.classDefinition({
+  $classpath : "AsyncTest",
+  $extends : "aria.jsunit.TestCase",
+  $prototype : {
+    testAsyncMethod : function () {
+      someClass.callMeLater({
+        fn : this.methodCallback,
+        scope : this
+      });
+    },
+
+    methodCallback : function () {
+      this.assertTrue(true);
+      this.notifyTestEnd("testAsyncMethod");
+    }
+  }
+});
+</code></pre>
+
+
+
+        <h2>Fixtures : <code>setUp</code> / <code>tearDown</code></h2>
+
+        </p>If several tests in a single test case are using the same kind of objects in their tests, it can be interesting to define the <code>setUp</code> and <code>tearDown</code> methods in the <code>$prototype</code> of the <code>TestCase</code>. These two methods are called before and after each test method.</p>
+
+<pre><code>Aria.classDefinition({
+  $classpath : "Fixtures",
+  $extends : "aria.jsunit.TestCase",
+  $prototype : {
+    countSetUp : 0,      // 2 at the end of testing
+    countTearDown : 0,   // 2 at the end of testing
+
+    setUp : function () {
+      this.countSetUp += 1;
+    },
+
+    tearDown : function () {
+      this.countTearDown += 1;
+    },
+
+    testOne : function () {},
+
+    testTwo : function () {}
+  }
+});
+</code></pre>
+
+          <h2>Listening events</h2>
+
+          <p>In some cases we want to assert that an event has been raised or not by a given class. This is a basic form of spy. <code>Assert</code> provides the following methods</p>
+
+          <ul>
+            <li>
+              <code>registerObject</code> / <code>unregisterObject</code> Listen to all events fired by a given object
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <code>assertEventFired</code> / <code>assertEventNotFired</code> Assert that en event with a given name has been raised
+            </li>
+          </ul>
+          <ul>
+            <li>
+              <code>getEvent</code> Get the event object of a given event name, useful to assert that parameters are passed correctly.
+            </li>
+          </ul>
+
+The following is an example test case using <code>assertEventFired</code>
+
+<pre><code>Aria.classDefinition({
+  $classpath : "Events",
+  $extends : "aria.jsunit.TestCase",
+  $dependencies : ["anotherClass"],
+  $prototype : {
+    testEventFired : function () {
+      // We mu register an object to be able to assert that it's raising events
+      this.registerObject(anotherClass);
+
+      // Call a method that raises an event
+      anotherClass.callMe();
+
+      this.assertEventFired("callMeDone");
+    }
+  }
+});
+</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+
+    <footer>
+      <div class="container-fluid">
+        <div class="row span12">Copyright &copy; 2013 <a href="http://www.amadeus.com/">Amadeus s.a.s</a>. All Rights Reserved.</div>
+      </div>
+    </footer>
+  </body>
+</html>
