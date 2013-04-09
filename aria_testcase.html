@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.0.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
+    <link rel="stylesheet" href="./css/font/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="./css/font/font-awesome-ie7.min.css">
+    <![endif]-->
 
       
     <script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script>
@@ -61,7 +65,21 @@
 
               <li class="nav-header">Aria Tester</li>
               <li class="active">
-                <a href="aria_testcase.html" title="Test Case"><i class="none"></i>Test Case</a>
+                <a href="aria_testcase.html" title="Test Case"><i class="icon-chevron-down"></i>Test Case</a>
+                <ul class="nav nav-list">
+                  <li>
+                    <a href="#assert">Assert</a>
+                  </li>
+                  <li>
+                    <a href="#async">Asynchronous testing</a>
+                  </li>
+                  <li>
+                    <a href="#fixtures">Fixtures - setup / teardown</a>
+                  </li>
+                  <li>
+                    <a href="#events">Listening events</a>
+                  </li>
+                </ul>
               </li>
               <li>
                 <a href="aria_modulectrltestcase.html" title="Module Controller Test Case"><i class="none"></i>Module Controller Test Case</a>
@@ -106,7 +124,7 @@
 
           <p>The scope of a test method is the test case and no return value is expected. The status of the test is determined by the result of the various asserts made during this test. A test method containing no failing assert is considered as successful if no JavaScript error was thrown during its execution.</p>
 
-          <h2>Assert</h2>
+          <h2><a id="assert">Assert</a></h2>
 
           <p>The possible assertions that can be done from within a test case are defined in <code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.Assert">aria.jsunit.Assert</a></code> and are</p>
 
@@ -192,9 +210,18 @@ this.assertErrorInLogs("Error while having fun");   // true
 }
 </code></pre>
 
+        <h3>Error Message</h3>
+
+        <p>All <code>assert*</code> methods accept as last parameter a message used to better understand why the assert failed.</p>
+
+<pre><code>this.assertEquals("a", "A", "In a case insentive world, letter '%1' equals '%2'");
+// It'll log
+// In a case insentive world, letter 'a' equals 'A'
+</code></pre>
 
 
-        <h2>Asynchronous testing</h2>
+
+        <h2><a id="async">Asynchronous testing</a></h2>
 
         <p>Asynchronous tests are a special kind of test methods, and their name should start with <code>testAsync</code></p>
 
@@ -225,7 +252,7 @@ this.assertErrorInLogs("Error while having fun");   // true
 
 
 
-        <h2>Fixtures : <code>setUp</code> / <code>tearDown</code></h2>
+        <h2><a id="fixtures">Fixtures : <code>setUp</code> / <code>tearDown</code></a></h2>
 
         </p>If several tests in a single test case are using the same kind of objects in their tests, it can be interesting to define the <code>setUp</code> and <code>tearDown</code> methods in the <code>$prototype</code> of the <code>TestCase</code>. These two methods are called before and after each test method.</p>
 
@@ -251,7 +278,7 @@ this.assertErrorInLogs("Error while having fun");   // true
 });
 </code></pre>
 
-          <h2>Listening events</h2>
+          <h2><a id="events">Listening events</a></h2>
 
           <p>In some cases we want to assert that an event has been raised or not by a given class. This is a basic form of spy. <code>Assert</code> provides the following methods</p>
 

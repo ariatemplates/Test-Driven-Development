@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>Widget Test Case - Test Driven Development</title>
+    <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.0.min.css" />
+    <link rel="stylesheet" href="./css/site.css" />
+    <link rel="stylesheet" href="./css/print.css" media="print" />
+    <link rel="stylesheet" href="./css/font/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="./css/font/font-awesome-ie7.min.css">
+    <![endif]-->
+
+      
+    <script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script>
+
+    <link rel="stylesheet" href="js/highlight.js/styles/github.css">
+    <script src="js/highlight.js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body class="topBarDisabled">
+    <div class="container-fluid">
+      <div id="banner">
+        <div class="pull-left">
+          <div id="bannerLeft">
+            <h2>Test Driven Development</h2>
+          </div>
+        </div>
+        <div class="pull-right">  </div>
+        <div class="clear"><hr/></div>
+      </div>
+
+      <div id="breadcrumbs">
+        <ul class="breadcrumb">
+          <li id="projectVersion">Version: 1.0.0</li>
+          <li class="pull-right">
+            <a href="https://github.com/ariatemplates/Test-Driven-Development" class="externalLink" title="This project on GitHub">This project on GitHub</a>
+          </li>
+          <li class="divider pull-right">|</li>
+          <li class="pull-right">
+            <a href="http://github.com/ariatemplates/attester" class="externalLink" title="attester">attester</a>
+          </li>
+          <li class="divider pull-right">|</li>
+          <li class="pull-right">
+            <a href="http://ariatemplates.com" class="externalLink" title="Aria Templates">Aria Templates</a>
+          </li>
+        </ul>
+      </div>
+
+            
+      <div class="row-fluid">
+        <div id="leftColumn" class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+
+              <li class="nav-header">Testing</li>
+              <li>
+                <a href="index.html" title="Introduction"><i class="none"></i>Introduction</a>
+              </li>
+              <li>
+                <a href="terminology.html" title="Terminology"><i class="none"></i>Terminology</a>
+              </li>
+
+              <li class="nav-header">Aria Tester</li>
+              <li>
+                <a href="aria_testcase.html" title="Test Case"><i class="none"></i>Test Case</a>
+              </li>
+              <li>
+                <a href="aria_modulectrltestcase.html" title="Module Controller Test Case"><i class="none"></i>Module Controller Test Case</a>
+              </li>
+              <li class="active">
+                <a href="aria_widgettestcase.html" title="Widget Test Case"><i class="icon-chevron-down"></i>Widget Test Case</a>
+                <ul class="nav nav-list">
+                  <li>
+                    <a href="#automatic">Automatic Creation</a>
+                  </li>
+                  <li>
+                    <a href="#manual">Manual Creation</a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="aria_templatetestcase.html" title="Template Test Case"><i class="none"></i>Template Test Case</a>
+              </li>
+              <li>
+                <a href="aria_robottestcase.html" title="Robot Test Case"><i class="none"></i>Robot Test Case</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+                
+        <div id="bodyColumn"  class="span9" >
+
+          <h2>Widget Test Case</h2>
+
+          <p>Better suited for testing widgets as it provides a controlled environment where to safely create widgets without the need of real template.</p>
+
+          <p>It make use of the class <code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.helpers.OutObj">aria.jsunit.helpers.OutObj</a></code> to mock a <code>TemplateCtxt</code> and provide a test area in the DOM. <code>OutObj</code> is available as the property <code>this.outObj</code> of the test class.</p>
+
+
+          <h2><a id="automatic">Automatic Creation</a></h2>
+
+          <p>As of Aria Templates <strong>1.4.1</strong> any <code>WidgetTestCase</code> has the method:</p>
+
+          <ul>
+            <li>
+              <code>createAndInit</code> Create an instance of the widget under testing, put the output of <code>writeMarkup</code> in the DOM and call the widget's <code>initWidget</code> method.
+            </li>
+          </ul>
+
+          <p>By calling <code>createAndInit</code> we can emulate exactly the same behavior of a widget inside a template, but without the need of creating and loading one.</p>
+
+          <p>The test area in DOM where widgets are inserted is cleaned automatically when the test ends. However if the test case has multiple test methods, it's up to the developer to clean the test area at the end of every method by calling <code>this.outObj.clearAll();</code></p>
+
+<pre><code>Aria.classDefinition({
+    $classpath : "MyWidgetTest",
+    $extends : "aria.jsunit.WidgetTestCase",
+    $dependencies : ["myLibrary.ImageGallery"],
+    $prototype : {
+        testInitialValueFalse : function () {
+            var model = {};
+            var cfg = {
+                images : ["one.jpg", "two.jpg"],
+                bind : {
+                    index : {
+                        inside : model,
+                        to : "visible"
+                    }
+                }
+            };
+
+            var widget = this.createAndInit("myLibrary.ImageGallery", cfg);
+            // Assuming that the widget defines a getImageDom method to img tag in the DOM
+            var imageElement = widget.getImageDom();
+
+            // Assuming that by default the widget displays the first image
+            this.assertEquals(imageElement.src, "one.jpg");
+
+            // Change the datamodel to display the second image
+            aria.utils.Json.setValue(model, "visible", 1);
+
+            imageElement = widget.getImageDom();
+            this.assertEquals(imageElement.src, "two.jpg");
+
+            widget.$dispose();
+        }
+     }
+});</code></pre>
+
+          <p>This method is useful for self-closing widgets like the following</p>
+
+<pre><code>{@aria:TextField {}/}</code></pre>
+
+          <p>Container widgets don't use the <code>writeMarkup</code> method but a combination of <code>writeMarkupBegin</code>, HTML content and <code>writeMarkupEnd</code>. To test such kind of widgets <a href="#manual">manual creation</a> is needed.</p>
+
+          <h2><a id="manual">Manual Creation</a></h2>
+
+          <p>Creating manually a widget means executing what is done by the <code>createAndInit</code> method. Manual creation should be used when the automatic one is not available (versions before 1.4.1) or when you need to modify some actions.</p>
+
+<pre><code>Aria.classDefinition({
+    $classpath : "MyWidgetTest",
+    $extends : "aria.jsunit.WidgetTestCase",
+    $dependencies : ["myLibrary.ImageGallery"],
+    $prototype : {
+        testInitialValueFalse : function () {
+
+            // Please don't use this method unless you know what you're doing
+            // Use automatic creation instead
+
+            var model = {};
+            var cfg = {
+                images : ["one.jpg", "two.jpg"],
+                bind : {
+                    index : {
+                        inside : model,
+                        to : "visible"
+                    }
+                }
+            };
+
+            // Creates a widget instance
+            var widget = new myLibrary.ImageGallery(cfg, this.outObj.tplCtxt);
+            widget.writeMarkup(this.outObj);
+            this.outObj.putInDOM();
+            widget.initWidget();
+
+            // Assuming that the widget defines a getImageDom method to img tag in the DOM
+            var imageElement = widget.getImageDom();
+
+            // Assuming that by default the widget displays the first image
+            this.assertEquals(imageElement.src, "one.jpg");
+
+            this.outObj.clearAll();
+            widget.$dispose();
+        }
+     }
+});</code></pre>
+
+
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+
+    <footer>
+      <div class="container-fluid">
+        <div class="row span12">Copyright &copy; 2013 <a href="http://www.amadeus.com/">Amadeus s.a.s</a>. All Rights Reserved.</div>
+      </div>
+    </footer>
+  </body>
+</html>

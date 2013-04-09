@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.0.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
+    <link rel="stylesheet" href="./css/font/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="./css/font/font-awesome-ie7.min.css">
+    <![endif]-->
 
       
     <script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script>
@@ -64,7 +68,18 @@
                 <a href="aria_testcase.html" title="Test Case"><i class="none"></i>Test Case</a>
               </li>
               <li class="active">
-                <a href="aria_modulectrltestcase.html" title="Module Controller Test Case"><i class="none"></i>Module Controller Test Case</a>
+                <a href="aria_modulectrltestcase.html" title="Module Controller Test Case"><i class="icon-chevron-down"></i>Module Controller Test Case</a>
+                <ul class="nav nav-list">
+                  <li>
+                    <a href="#assert">Assert</a>
+                  </li>
+                  <li>
+                    <a href="#automatic">Automatic Creation</a>
+                  </li>
+                  <li>
+                    <a href="#manual">Manual Creation</a>
+                  </li>
+                </ul>
               </li>
               <li>
                 <a href="aria_widgettestcase.html" title="Widget Test Case"><i class="none"></i>Widget Test Case</a>
@@ -86,7 +101,7 @@
 
           <p><code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.ModuleCtrlTestCase" title="aria.jsunit.ModuleCtrlTestCase">ModuleCtrlTestCase</a></code> provides helper methods to instantiate and test module controllers. The class is designed to monitor all events and server connections made by a module.</p>
 
-          <h2>Assert</h2>
+          <h2><a id="assert">Assert</a></h2>
 
           <p>On top of the assert methods that it inherits from <a href="aria_testcase.html">Test Case</a>, it provides the following:</p>
 
@@ -100,7 +115,7 @@
 this.cxLogs[0].ioRequest.url;  //  http://something.here/search
 </code></pre>
 
-          <h2>Automatic Creation</h2>
+          <h2><a id="automatic">Automatic Creation</a></h2>
 
           <p>Starting from Aria Templates <strong>1.3.7</strong> <code>ModuleCtrlTestCase</code> is able to automatically create and dispose the instance of Module Controller under test.</p>
 
@@ -169,7 +184,7 @@ this.cxLogs[0].ioRequest.url;  //  http://something.here/search
 });</code></pre>
 
 
-          <h3>Manual creation</h3>
+          <h3><a id="manual">Manual creation</a></h3>
 
           Before Aria Templates 1.3.7 the automatic mechanism to create a module controller instance is not available. In this case it's possible to manually create an instance with the following code:
 
