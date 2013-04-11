@@ -134,7 +134,9 @@
             </li>
           </ul>
 
-<pre><code>this.assertTrue("a truthy value");  // assert fail</code></pre>
+<pre><code>this.assertTrue("a truth-y value");  // assert fail
+
+// assertTrue(value) corresponds to: assertEquals(value, true)</code></pre>
 
           <ul>
             <li>
@@ -145,6 +147,9 @@
 <pre><code>var number = 12;
 this.assertEquals(number, 12);   // true
 this.assertEquals(number, "12"); // false
+
+// assertEquals(one, two) corresponds to: assertTrue(one === true)
+// It's preferable to use assertEquals over assertTrue for easier debugging
 </code></pre>
 
           <ul>
@@ -212,11 +217,11 @@ this.assertErrorInLogs("Error while having fun");   // true
 
         <h3>Error Message</h3>
 
-        <p>All <code>assert*</code> methods accept as last parameter a message used to better understand why the assert failed.</p>
+        <p><code>assert*</code> methods accept as message parameter used to better understand why the assert failed. It is usually the first parameter after the value(s) being asserted, for more information refer to the <a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.Assert">API documentation</a>.</p>
 
-<pre><code>this.assertEquals("a", "A", "In a case insentive world, letter '%1' equals '%2'");
+<pre><code>this.assertEquals("a", "A", "In a case insensitive world, letter %1 equals %2");
 // It'll log
-// In a case insentive world, letter 'a' equals 'A'
+// In a case insensitive world, letter "a" equals "A"
 </code></pre>
 
 
