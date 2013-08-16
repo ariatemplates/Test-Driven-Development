@@ -113,7 +113,7 @@
 
           <p>By calling <code>createAndInit</code> we can emulate exactly the same behavior of a widget inside a template, but without the need of creating and loading one.</p>
 
-          <p>The test area in DOM where widgets are inserted is cleaned automatically when the test ends. However if the test case has multiple test methods, it's up to the developer to clean the test area at the end of every method by calling <code>this.outObj.clearAll();</code></p>
+          <p>The test area in DOM where widgets are inserted is cleaned automatically when the test ends. However if the test case has multiple test methods, it's up to the developer to clean the test area at the end of every method by calling <code>this.clearAll();</code>. Before version 1.4.8 the method to be called is <code>this.outObj.clearAll();</code></p>
 
 <pre><code>Aria.classDefinition({
     $classpath : "MyWidgetTest",
@@ -154,7 +154,47 @@
 
 <pre><code>{@aria:TextField {}/}</code></pre>
 
-          <p>Container widgets don't use the <code>writeMarkup</code> method but a combination of <code>writeMarkupBegin</code>, HTML content and <code>writeMarkupEnd</code>. To test such kind of widgets <a href="#manual">manual creation</a> is needed.</p>
+          <p>Container widgets don't use the <code>writeMarkup</code> method but a combination of <code>writeMarkupBegin</code>, HTML content and <code>writeMarkupEnd</code>. As of Aria Templates <strong>1.4.8</strong> you can test such kind of widgets using the following method:</p>
+
+          <ul>
+            <li>
+              <code>createContainerAndInit</code> Create an instance of the widget under testing, put the output of <code>writeMarkupBegin</code>, some additional markup and the output of <code>writeMarkupEnd</code> in the DOM and call the widget's <code>initWidget</code> method.
+            </li>
+          </ul>
+
+<pre><code>Aria.classDefinition({
+    $classpath : "MyWidgetTest",
+    $extends : "aria.jsunit.WidgetTestCase",
+    $dependencies : ["myLibrary.Accordion"],
+    $prototype : {
+        testInitialValueFalse : function () {
+            var model = {};
+            var cfg = {
+                open : true,
+                bind : {
+                    open : {
+                        inside : model,
+                        to : "open"
+                    }
+                }
+            };
+
+            var widget = this.createContainerAndInit("myLibrary.Accordion", cfg, "<div>Test markup</div>");
+
+            // Assuming that the widget defines a getDom method
+            var hasMarkup = widget.getDom().getElementsByTagName("div").length > 0;
+            this.assertTrue(hasMarkup);
+
+            // Change the datamodel to close the accordion (assuming it remove the content from the DOM)
+            aria.utils.Json.setValue(model, "open", false);
+
+            hasMarkup = widget.getDom().getElementsByTagName("div").length > 0;
+            this.assertFalse(hasMarkup);
+
+            widget.$dispose();
+        }
+     }
+});</code></pre>
 
           <h2><a id="manual">Manual Creation</a></h2>
 
@@ -198,6 +238,21 @@
         }
      }
 });</code></pre>
+
+          <p>The sequence for <strong>container</strong> widgets is the following:</p>
+
+<pre><code>var widget = new myLibrary.Accordion(cfg, this.outObj.tplCtxt);
+// Opening widget tag
+widget.writeMarkupBegin(this.outObj);
+
+// Any additional markup (widget content)
+this.outObj.write("");
+
+// Closing widget tag
+widget.writeMarkupEnd(this.outObj);
+
+this.outObj.putInDOM();
+widget.initWidget();</code></pre>
 
 
         </div>
