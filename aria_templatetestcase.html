@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Language" content="en" />
+    <title>Template Test Case - Test Driven Development</title>
+    <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.0.min.css" />
+    <link rel="stylesheet" href="./css/site.css" />
+    <link rel="stylesheet" href="./css/print.css" media="print" />
+    <link rel="stylesheet" href="./css/font/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="./css/font/font-awesome-ie7.min.css">
+    <![endif]-->
+
+
+    <script type="text/javascript" src="./js/apache-maven-fluido-1.3.0.min.js"></script>
+
+    <link rel="stylesheet" href="js/highlight.js/styles/github.css">
+    <script src="js/highlight.js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body class="topBarDisabled">
+    <div class="container-fluid">
+      <div id="banner">
+        <div class="pull-left">
+          <div id="bannerLeft">
+            <h2>Test Driven Development</h2>
+          </div>
+        </div>
+        <div class="pull-right">  </div>
+        <div class="clear"><hr/></div>
+      </div>
+
+      <div id="breadcrumbs">
+        <ul class="breadcrumb">
+          <li id="projectVersion">Version: 1.0.0</li>
+          <li class="pull-right">
+            <a href="https://github.com/ariatemplates/Test-Driven-Development" class="externalLink" title="This project on GitHub">This project on GitHub</a>
+          </li>
+          <li class="divider pull-right">|</li>
+          <li class="pull-right">
+            <a href="https://github.com/attester/attester" class="externalLink" title="attester">attester</a>
+          </li>
+          <li class="divider pull-right">|</li>
+          <li class="pull-right">
+            <a href="http://ariatemplates.com" class="externalLink" title="Aria Templates">Aria Templates</a>
+          </li>
+        </ul>
+      </div>
+
+
+      <div class="row-fluid">
+        <div id="leftColumn" class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+
+              <li class="nav-header">Testing</li>
+              <li>
+                <a href="index.html" title="Introduction"><i class="none"></i>Introduction</a>
+              </li>
+              <li>
+                <a href="terminology.html" title="Terminology"><i class="none"></i>Terminology</a>
+              </li>
+
+              <li class="nav-header">Aria Tester</li>
+              <li>
+                <a href="aria_testcase.html" title="Test Case"><i class="none"></i>Test Case</a>
+              </li>
+              <li>
+                <a href="aria_modulectrltestcase.html" title="Module Controller Test Case"><i class="none"></i>Module Controller Test Case</a>
+              </li>
+              <li>
+                <a href="aria_widgettestcase.html" title="Widget Test Case"><i class="none"></i>Widget Test Case</a>
+              </li>
+              <li class="active">
+                <a href="aria_templatetestcase.html" title="Template Test Case"><i class="icon-chevron-down"></i>Template Test Case</a>
+                <ul class="nav nav-list">
+                  <li>
+                    <a href="#structure">Test Structure</a>
+                  </li>
+                  <li>
+                    <a href="#environment">Environment</a>
+                  </li>
+                  <li>
+                    <a href="#assertions">DOM Assertions</a>
+                  </li>
+                  <li>
+                    <a href="#interaction">User Interaction</a>
+                  </li>
+                  <li>
+                    <a href="#examples">Examples</a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a href="aria_robottestcase.html" title="Robot Test Case"><i class="none"></i>Robot Test Case</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+        <div id="bodyColumn"  class="span9" >
+
+          <h2>Template Test Case</h2>
+
+          <p>A Template test case allows to test an entire template (or module) in the DOM. A template is loaded into the page just as if it was loaded in a whole applcation, the test class however provides methods to check what is displayed in the page and to interact with it simulating user behavior.</p>
+
+          <p>It make use of the class <code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.helpers.OutObj">aria.jsunit.helpers.OutObj</a></code> to mock a <code>TemplateCtxt</code> and provide a test area in the DOM. <code>OutObj</code> is available as the property <code>this.outObj</code> of the test class.</p>
+
+
+          <h2><a id="structure">Test Structure</a></h2>
+
+          <p>The structure of a Template test case is different from other unit tests. Due to the test complexity, as single <code>TemplateTestCase</code> class should be used only for one asynchronous tests (usually corresponding to one template).</p>
+
+          <p>The skeleton is as follow:</p>
+
+<pre><code>Aria.classDefinition({
+    $classpath : "MyTemplateTest",
+    $extends : "aria.jsunit.TemplateTestCase",
+    $prototype : {
+        runTemplateTest : function () {
+            // Do some assertions
+
+            this.end();
+        }
+     }
+});</code></pre>
+
+          <p>There's only one entry point, <code>runTemplateTest</code> and the test can only be asynchronous, for this reason it's necessary to call <code>this.end();</code> at the end of testing.</p>
+
+          <p>If the test class is called <code>MyTemplateTest</code>, by default, the test runner will load the template <code>MyTemplateTestTpl</code> inside the page and initialize it with an empty data-model. It is possible to change this behavior by configuring the environment as explained in the paragraph below.</p>
+
+
+
+          <h2><a id="environment">Environment</a></h2>
+
+          <p>The environment configuration allows to change the default Template test case behavior.</p>
+
+<pre><code>Aria.classDefinition({
+    $classpath : "MyTemplateTest",
+    $extends : "aria.jsunit.TemplateTestCase",
+    $constructor : function () {
+        this.$TemplateTestCase.constructor.call(this);
+        this.setTestEnv({
+            template : "another.path.TemplateToTest"
+        });
+    },
+    $prototype : {
+        runTemplateTest : function () {
+            // Do some assertions
+
+            this.end();
+        }
+     }
+});</code></pre>
+
+          <p>The environment can be changed in the test constructor calling <code>this.setTestEnv();</code>, this method takes a configuration object with the following properties:</p>
+
+          <ul>
+            <li><code>template</code> Template classpath, defaults to <code>this.$classpath + "Tpl"</code></li>
+            <li><code>moduleCtrl</code> Module controller description. It should match the <a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.templates.CfgBeans:ModuleCtrl" class="externalLink">ModuleCtrl</a> bean, defaults to <code>null</code></li>
+            <li><code>data</code> Initial data model, default to an empty object</li>
+            <li><code>iframe</code> Whether the template should be loaded inside an iframe or directly in the test page. Using an iframe gives more isolation but makes the test slower as the framework must be loaded twice. Defaults to <code>false</code></li>
+            <li><code>baseCss</code> CSS text around the test area or iframe. It is useful to change for instance the window size and assert what happens on viewport resize.</li>
+          </ul>
+
+          <p>As the test might run in different environments (in the test page or inside an iframe) <code>TemplateTestCase</code> class provide shortcuts to useful these objects:</p>
+
+          <ul>
+            <li><code>this.templateCtxt</code> Reference to the template context</li>
+            <li><code>this.testWindow</code> Reference to the <code>window</code> object containing the template under test.</li>
+            <li><code>this.testDocument</code> Reference to the <code>document</code> object containing the template under test</li>
+            <li><code>this.testDiv</code> Element containing the template output</li>
+          </ul>
+
+          <p>The <strong>template context</strong> is particularly useful to test the internals of the template. It is an instance of <a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.templates.TemplateCtxt" class="externalLink">aria.templates.TemplateCtxt</a> so it has the interesting properties:</p>
+
+          <ul>
+            <li><code>this.templateCtxt.data</code> Template's data model.</li>
+            <li><code>this.templateCtxt.moduleCtrl</code> Public interface of the module controller.</li>
+            <li><code>this.templateCtxt.moduleCtrlPrivate</code> Private instance of the module controller.</li>
+            <li><code>this.templateCtxt._tpl</code> Template instance, it has all the methods defined in the template script.</li>
+          </ul>
+
+          <p>Through the <code>templateCtxt</code> is possible to call the methods (among many others):</p>
+
+          <ul>
+            <li><code>this.templateCtxt.$refresh()</code> Refresh the whole template of a specific section.</li>
+            <li><code>this.templateCtxt.$focus(id)</code> Give focus to the element with the specified id.</li>
+            <li><code>this.templateCtxt.$getElementById(id)</code> Returns an HTMLElement wrapped in DomElementWrapper.</li>
+          </ul>
+
+
+
+          <h2><a id="assertions">DOM Assertions</a></h2>
+
+          <p>Usual assertion for this type of test case are the presence of DOM elements on the page, their attributes or properties when the template is loaded or after <a href="#interaction">user interaction</a> or template refresh.</p>
+
+          <p>The following utilities might be of help when asserting DOM element properties:</p>
+
+          <ul>
+            <li><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.utils.Dom" class="externalLink">aria.utils.Dom</a> with methods like <code>calculatePosition</code>, <code>getGeometry</code> and <code></code>getStyle</li>
+            <li><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.popups.PopupManager" class="externalLink">aria.popups.PopupManager</a> with methods like <code>getZIndexForPopup</code></li>
+          </ul>
+
+          <p>The above utilities are useful once you have a DOM element, to retrieve it you can use any of the following methods of the test class.</p>
+
+          <ul>
+            <li><code>getElementById(id)</code> Return the DOM element in the current template with the specified id (the id should have been given with the <code>{id .../}</code> statement).</li>
+            <li><code>getElementsByClassName(dom, classname)</code> Get the element with the given class, child of a dom element.</li>
+            <li><code>getWidgetInstance(id)</code> Get the instance of a widget from the template, given its ID.</li>
+            <li><code>getWidgetDomElement(id, tagName)</code> Get the first DOM element with the given tag name from the given widget in the template.</li>
+            <li><code>getInputField(id)</code> Get the <code>input</code> DOM element of an input based widget.</li>
+            <li><code>getWidgetDropDownPopup(id)</code> Get the DOM element of the dropdown popup associated to a DropDownTrait widget (MultiSelect, AutoComplete, ...).</li>
+            <li><code>getExpandButton(id)</code> Get the expand button of a dropdown-based widget (MultiSelect, AutoComplete, ...).</li>
+            <li><code>getLink(id)</code> Get the <code>a</code> DOM element of a Link widget.</li>
+          </ul>
+
+          <p>This test class provides also methods to retrieve information of DOM elements:</p>
+
+          <ul>
+            <li><code>computeZIndex(element)</code> Compute the z-index of an element.</li>
+          </ul>
+
+
+
+          <h2><a id="interaction">User Interaction</a></h2>
+
+          <p>The greatest advantage of <code>TemplateTestCase</code> class is the ability to simulate user behavior like click, type, mouse move and so on.</p>
+
+          <p>The class provides the method:</p>
+
+          <ul>
+            <li><code>this.clickAndType(id, text, callback, blur)</code> Calling this method will click on the element with id <code>id</code>, type the text in <code>text</code>, blur the field if <code>blur</code> is <code>true</code> (default value) and execute the callback after.</li>
+          </ul>
+
+          <p><code>clickAndType</code> is convenient shortcut for a common user action, the implementation of this method use the utility class <a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.utils.SynEvents" class="externalLink"><code>aria.utils.SynEvents</code></a> that is a wrapper around <a href="https://github.com/bitovi/syn" class="externalLink">syn</a>, the Standalone Synthetic Event Library by <a href="http://bitovi.com/" class="externalLink">bitovi</a> and available as shortcut on <code>this.synEvent</code>.</p>
+
+          <ul>
+            <li><code>this.synEvent.click(element, callback)</code> Emulates a click event on a specific DOM element, it'll also fire in the correct order the events <code>mosedown</code>, <code>mousemove</code> and <code>mouseup</code>.</li>
+            <li><code>this.synEvent.move(options, from, callback)</code> Emulates a mouse move from a given element <code>from</code> or a point in the screen to another point as described in <code>options</code>. It'll fire the events<code>mouseover</code> and <code>mouseout</code> as well as <code>mousenter</code> and <code>mouseleave</code> on Internet Explorer.</li>
+            <li><code>this.synEvent.type(element, text, callback)</code> Emulate a typing in a specific DOM element. It fires the events <code>keydown</code>, <code>keypress</code> and <code>keyup</code> on the given target.</li>
+          </ul>
+
+          <p>It is recommended to use the shortcut <code>this.synEvent</code> over the full classpath because the shortcut fires event in the correct <a href="#environment">environment</a>, event when the test runs inside an iframe.</p>
+
+          <p>For more flexibility is also possible to use the <code>Syn</code> object directly using <code>this.testWindow.Syn</code>. This allows to call any method provided by Syn, the drawback is that the callback must be plain functions and cannot be <a href="http://ariatemplates.com/usermanual/latest/working_in_an_asynchronous_world#aria-templates-callback-object" class="externalLink">Aria Templates callback</a>.</p>
+
+          <p><code>Syn</code> provides the following actions:</p>
+
+          <ul>
+            <li><code>Syn.click(options, element, callback)</code></li>
+            <li><code>Syn.dblclick(options, element, callback)</code></li>
+            <li><code>Syn.rightClick(options, element, callback)</code></li>
+            <li><code>Syn.move(options, element, callback)</code></li>
+            <li><code>Syn.drag(options, element, callback)</code></li>
+            <li><code>Syn.key(options, element, callback)</code></li>
+            <li><code>Syn.type(options, element, callback)</code></li>
+          </ul>
+
+          <p>The actions provided by Syn are always more complex than simply raising an event, in most cases they fire multiple events or simply require different implementation depending on the browser.</p>
+
+          <p>A lower level API is exposed by:</p>
+
+          <ul>
+            <li><code>Syn.trigget(type, options, element)</code> This method allows to create a synthetic event and dispatch it on the element. It alsow runs any default actions for that element (like followin a link on <code>&lt;a&gt;</code> tags).</li>
+            <li><code>aria.utils.FireDomEvent.fireEvent(type, element, options)</code> Fire any event on a target HTML element. It supports mouse, keyboard and generic HTML events. It can be used as well to simulate <strong>touch</strong> events.</li>
+            <li><code>aria.utils.Delegate.delegate(event)</code> Use the internal delegate mechanism to fire any event, even non-standard ones. Events can be created calling <code>aria.DomEvent.getFakeEvent(type, element)</code> and then adding properties on it. This is the lowest level API and only works for framework parts that rely on event delegation.</li>
+          </ul>
+
+
+
+          <h2><a id="examples">Examples</a></h2>
+
+          <p>.</p>
+
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+
+    <footer>
+      <div class="container-fluid">
+        <div class="row span12">Copyright &copy; 2013 <a href="http://www.amadeus.com/">Amadeus s.a.s</a>. All Rights Reserved.</div>
+      </div>
+    </footer>
+  </body>
+</html>
