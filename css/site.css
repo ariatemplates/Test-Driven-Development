@@ -28,3 +28,8 @@ h3 a:hover:after {
 	margin-left: 0.5em;
 	font-size: 70%;
 }
+
+h2 a.ATAPILink {
+    color: #00A;
+    border-bottom:1px dashed;
+}
