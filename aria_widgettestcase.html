@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -98,7 +98,7 @@
 
           <p>Better suited for testing widgets as it provides a controlled environment where to safely create widgets without the need of real template.</p>
 
-          <p>It make use of the class <code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.helpers.OutObj">aria.jsunit.helpers.OutObj</a></code> to mock a <code>TemplateCtxt</code> and provide a test area in the DOM. <code>OutObj</code> is available as the property <code>this.outObj</code> of the test class.</p>
+          <p>It makes use of the class <code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.helpers.OutObj">aria.jsunit.helpers.OutObj</a></code> to mock a <code>TemplateCtxt</code> and provide a test area in the DOM. <code>OutObj</code> is available as the property <code>this.outObj</code> of the test class.</p>
 
 
           <h2><a id="automatic">Automatic Creation</a></h2>
@@ -179,7 +179,7 @@
                 }
             };
 
-            var widget = this.createContainerAndInit("myLibrary.Accordion", cfg, "<div>Test markup</div>");
+            var widget = this.createContainerAndInit("myLibrary.Accordion", cfg, "&lt;div&gt;Test markup&lt;/div&gt;");
 
             // Assuming that the widget defines a getDom method
             var hasMarkup = widget.getDom().getElementsByTagName("div").length > 0;

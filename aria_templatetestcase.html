@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -107,12 +107,12 @@
 
           <p>A Template test case allows to test an entire template (or module) in the DOM. A template is loaded into the page just as if it was loaded in a whole applcation, the test class however provides methods to check what is displayed in the page and to interact with it simulating user behavior.</p>
 
-          <p>It make use of the class <code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.helpers.OutObj">aria.jsunit.helpers.OutObj</a></code> to mock a <code>TemplateCtxt</code> and provide a test area in the DOM. <code>OutObj</code> is available as the property <code>this.outObj</code> of the test class.</p>
+          <p>It makes use of the class <code><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.jsunit.helpers.OutObj">aria.jsunit.helpers.OutObj</a></code> to mock a <code>TemplateCtxt</code> and provide a test area in the DOM. <code>OutObj</code> is available as the property <code>this.outObj</code> of the test class.</p>
 
 
           <h2><a id="structure">Test Structure</a></h2>
 
-          <p>The structure of a Template test case is different from other unit tests. Due to the test complexity, as single <code>TemplateTestCase</code> class should be used only for one asynchronous tests (usually corresponding to one template).</p>
+          <p>The structure of a Template test case is different from other unit tests. Due to the test complexity, a single <code>TemplateTestCase</code> class should be used only for one asynchronous test (usually corresponding to one template).</p>
 
           <p>The skeleton is as follow:</p>
 
@@ -201,7 +201,7 @@
           <p>The following utilities might be of help when asserting DOM element properties:</p>
 
           <ul>
-            <li><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.utils.Dom" class="externalLink">aria.utils.Dom</a> with methods like <code>calculatePosition</code>, <code>getGeometry</code> and <code></code>getStyle</li>
+            <li><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.utils.Dom" class="externalLink">aria.utils.Dom</a> with methods like <code>calculatePosition</code>, <code>getGeometry</code> and <code>getStyle</code></li>
             <li><a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.popups.PopupManager" class="externalLink">aria.popups.PopupManager</a> with methods like <code>getZIndexForPopup</code></li>
           </ul>
 
@@ -230,7 +230,7 @@
 
           <p>The greatest advantage of <code>TemplateTestCase</code> class is the ability to simulate user behavior like click, type, mouse move and so on.</p>
 
-          <p>The class provides the method:</p>
+          <p>The class provides the following methods:</p>
 
           <ul>
             <li><code>this.clickAndType(id, text, callback, blur)</code> Calling this method will click on the element with id <code>id</code>, type the text in <code>text</code>, blur the field if <code>blur</code> is <code>true</code> (default value) and execute the callback after.</li>
@@ -240,13 +240,13 @@
 
           <ul>
             <li><code>this.synEvent.click(element, callback)</code> Emulates a click event on a specific DOM element, it'll also fire in the correct order the events <code>mosedown</code>, <code>mousemove</code> and <code>mouseup</code>.</li>
-            <li><code>this.synEvent.move(options, from, callback)</code> Emulates a mouse move from a given element <code>from</code> or a point in the screen to another point as described in <code>options</code>. It'll fire the events<code>mouseover</code> and <code>mouseout</code> as well as <code>mousenter</code> and <code>mouseleave</code> on Internet Explorer.</li>
-            <li><code>this.synEvent.type(element, text, callback)</code> Emulate a typing in a specific DOM element. It fires the events <code>keydown</code>, <code>keypress</code> and <code>keyup</code> on the given target.</li>
+            <li><code>this.synEvent.move(options, from, callback)</code> Emulates a mouse move from a given element <code>from</code> or a point in the screen to another point as described in <code>options</code>. It'll fire the events<code>mouseover</code> and <code>mouseout</code> as well as <code>mouseenter</code> and <code>mouseleave</code> on Internet Explorer.</li>
+            <li><code>this.synEvent.type(element, text, callback)</code> Emulates typing in a specific DOM element. It fires the events <code>keydown</code>, <code>keypress</code> and <code>keyup</code> on the given target.</li>
           </ul>
 
-          <p>It is recommended to use the shortcut <code>this.synEvent</code> over the full classpath because the shortcut fires event in the correct <a href="#environment">environment</a>, event when the test runs inside an iframe.</p>
+          <p>It is recommended to use the shortcut <code>this.synEvent</code> over the full classpath because the shortcut fires the events in the correct <a href="#environment">environment</a>, even when the test runs inside an iframe.</p>
 
-          <p>For more flexibility is also possible to use the <code>Syn</code> object directly using <code>this.testWindow.Syn</code>. This allows to call any method provided by Syn, the drawback is that the callback must be plain functions and cannot be <a href="http://ariatemplates.com/usermanual/latest/working_in_an_asynchronous_world#aria-templates-callback-object" class="externalLink">Aria Templates callback</a>.</p>
+          <p>For more flexibility it's also possible to use the <code>Syn</code> object directly using <code>this.testWindow.Syn</code>. This allows to call any method provided by Syn, the drawback is that the callback must be a plain function and cannot be <a href="http://ariatemplates.com/usermanual/latest/working_in_an_asynchronous_world#aria-templates-callback-object" class="externalLink">Aria Templates callback</a>.</p>
 
           <p><code>Syn</code> provides the following actions:</p>
 
@@ -265,7 +265,7 @@
           <p>A lower level API is exposed by:</p>
 
           <ul>
-            <li><code>Syn.trigget(type, options, element)</code> This method allows to create a synthetic event and dispatch it on the element. It alsow runs any default actions for that element (like followin a link on <code>&lt;a&gt;</code> tags).</li>
+            <li><code>Syn.trigger(type, options, element)</code> This method allows to create a synthetic event and dispatch it on the element. It also runs any default actions for that element (like following a link on <code>&lt;a&gt;</code> tags).</li>
             <li><code>aria.utils.FireDomEvent.fireEvent(type, element, options)</code> Fire any event on a target HTML element. It supports mouse, keyboard and generic HTML events. It can be used as well to simulate <strong>touch</strong> events.</li>
             <li><code>aria.utils.Delegate.delegate(event)</code> Use the internal delegate mechanism to fire any event, even non-standard ones. Events can be created calling <code>aria.DomEvent.getFakeEvent(type, element)</code> and then adding properties on it. This is the lowest level API and only works for framework parts that rely on event delegation.</li>
           </ul>
