@@ -163,7 +163,7 @@
             <li><code>moduleCtrl</code> Module controller description. It should match the <a href="http://ariatemplates.com/aria/guide/apps/apidocs/#aria.templates.CfgBeans:ModuleCtrl" class="externalLink">ModuleCtrl</a> bean, defaults to <code>null</code></li>
             <li><code>data</code> Initial data model, default to an empty object</li>
             <li><code>iframe</code> Whether the template should be loaded inside an iframe or directly in the test page. Using an iframe gives more isolation but makes the test slower as the framework must be loaded twice. Defaults to <code>false</code></li>
-            <li><code>baseCss</code> CSS text around the test area or iframe. It is useful to change for instance the window size and assert what happens on viewport resize.</li>
+            <li><code>css</code> and <code>baseCss</code> CSS text around the test area or iframe. It is useful to change for instance the window size and assert what happens on viewport resize. Use <code>css</code> if you want to append to default CSS text, or <code>baseCss</code> to change it completely.</li>
           </ul>
 
           <p>As the test might run in different environments (in the test page or inside an iframe) <code>TemplateTestCase</code> class provide shortcuts to useful these objects:</p>
