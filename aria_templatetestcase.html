@@ -273,7 +273,37 @@
 
 
           <h2><a id="examples">Examples</a></h2>
+            <h3>Template Test using a module controller</h3>
+            <p>The following example shows how to use a module controller in a template test. Currently it is necessary to set the data object inside the Environment explicitly to <code>null</code> to access the same object from the template/template script and the module controller.</p>
 
+<pre><code class="javascript">Aria.classDefinition({
+  $classpath : "MyTemplateTest",
+  $extends : "aria.jsunit.TemplateTestCase",
+  $constructor : function() {
+    this.$TemplateTestCase.constructor.call(this);
+    this.setTestEnv({
+      moduleCtrl : {
+        classpath : "controller.MyController"
+      },
+      data: null //necessary to have the same object inside the template/template script and the module controller
+    });
+  },
+  $prototype : {
+    runTemplateTest : function() {
+      //call module controller
+      this.templateCtxt.moduleCtrl.doRequest( //method setting something in the data object.
+        "ABC", {
+          fn : this.assertModuleCtrlCall, 
+          scope: this
+        });
+    },
+    assertModuleCtrlCall : function () {
+      // Do some assertions
+      this.assertTrue(this.templateCtxt.data.value !== null);
+      this.end();
+    }
+  }
+});</code></pre>
           <p>.</p>
 
         </div>
